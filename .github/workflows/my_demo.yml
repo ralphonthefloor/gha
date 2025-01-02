@@ -19,6 +19,7 @@ jobs:
       - run: echo "🍏 This job's status is ${{ job.status }}."
   Job2:
     name: build
+    needs: Job1
     runs-on: ubuntu-latest
     steps:
           - run: cd ${{ github.workspace }} && cat README.md
