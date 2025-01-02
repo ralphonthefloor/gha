@@ -21,4 +21,4 @@ jobs:
     name: build
     runs-on: ubuntu-latest
     steps:
-          - run: cat README.md
+          - run: cd ${{ github.workspace }} && cat README.md
