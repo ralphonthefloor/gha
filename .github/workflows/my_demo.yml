@@ -22,4 +22,4 @@ jobs:
     needs: Job1
     runs-on: ubuntu-latest
     steps:
-          - run: cd ${{ github.workspace }} && cat README.md
+          - run: cd ${{ github.workspace }} && ls
