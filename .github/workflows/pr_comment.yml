@@ -7,7 +7,7 @@ jobs:
   pr_commented:
     # This job only runs for pull request comments
     name: PR comment
-    if: ${{ github.event.issue.pull_request }} && contains(${{github.event.comment.body}}, '###secretkey')
+    if: ${{ github.event.issue.pull_request && contains(github.event.comment.body, '###secretkey')}}
     runs-on: ubuntu-latest
     steps:
           - run: |
@@ -16,3 +16,5 @@ jobs:
               NUMBER: ${{ github.event.issue.number }}
           - run: |
               echo ${{ github.event.comment.body }}
+          - run: |
+              echo ${{ github.event.issue.pull_request }}
