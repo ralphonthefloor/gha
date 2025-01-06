@@ -23,3 +23,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
           - run: cd ${{ github.workspace }} && ls
+  Job3:
+    name: Bump
+    runs-on: ubuntu-latest
+    steps:
+    - name: Semantic Release
+      uses: cycjimmy/semantic-release-action@v4
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
