@@ -16,3 +16,5 @@ jobs:
               NUMBER: ${{ github.event.issue.number }}
           - run: |
               echo ${{ github.event.comment.body }}
+          - run: |
+              echo ${{ github.event.issue.pull_request }}
