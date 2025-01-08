@@ -17,9 +17,8 @@ jobs:
                     git config --global user.email "kinnaird.matthew@gmail.com"
                     git config --global user.name "CICD User"
             -   name: Bump
-                shell: cmd
+                # shell: cmd
                 run: |
-                    npm version patch
-                    VERSION=$(node -p "require('./package.json').version")
+                    $VERSION=$(npm version patch)
                     echo "VERSION=$VERSION" >> $GITHUB_ENV
                     echo ${{env.version}}
