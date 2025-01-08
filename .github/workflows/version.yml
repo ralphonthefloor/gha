@@ -22,7 +22,7 @@ jobs:
                 # shell: cmd
                 run: |
                     $TAG=$(npm version patch)
-                    $env:GITHUB_ENV="tag=$TAG"
+                    "tag=$TAG" >> $env:GITHUB_ENV
                     echo "${{env.tag}}"
     
     debug: 
