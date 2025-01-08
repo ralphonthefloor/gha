@@ -48,3 +48,5 @@ jobs:
             env:
               NEW_TAG: ${{ steps.version-bump.outputs.newTag }}
             run: echo "new tag $NEW_TAG"
+  Job4:
+        uses: ./.github/workflows/reusable.yml
