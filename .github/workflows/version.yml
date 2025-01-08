@@ -1,0 +1,19 @@
+name: Versioning
+on: 
+    workflow_dispatch:
+jobs:
+    checkout: 
+        name: Checkout
+        runs-on: ubuntu-latest
+        steps:
+            -   name: Checkout
+                uses: actions/checkout@v4
+            -   name: Setup node
+                uses: actions/setup-node@v3
+                with:
+                    node-version: 20
+            -   name: Bump
+                run: |
+                    npm version patch
+                    VERSION=$(node -p "require('./package.json').version")
+                    echo "VERSION=$VERSION" >> $GITHUB_ENV
