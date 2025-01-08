@@ -21,4 +21,4 @@ jobs:
                 run: |
                     $VERSION=$(npm version patch)
                     echo "VERSION=$VERSION" >> $GITHUB_ENV
-                    echo ${{env.version}}
+                    echo "${{env.version}}"
