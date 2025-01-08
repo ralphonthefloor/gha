@@ -22,3 +22,4 @@ jobs:
                     npm version patch
                     VERSION=$(node -p "require('./package.json').version")
                     echo "VERSION=$VERSION" >> $GITHUB_ENV
+                    echo ${{env.version}}
