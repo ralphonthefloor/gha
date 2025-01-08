@@ -1,6 +1,7 @@
 name: My demo
 on: 
     push:
+        branches: main
 jobs:
   Job1:
     name: checkout
