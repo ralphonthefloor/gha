@@ -5,6 +5,8 @@ jobs:
     checkout: 
         name: Checkout
         runs-on: windows-2019
+        outputs:
+            tag: ${{env.tag}}
         steps:
             -   name: Checkout
                 uses: actions/checkout@v4
@@ -19,6 +21,16 @@ jobs:
             -   name: Bump
                 # shell: cmd
                 run: |
-                    $VERSION=$(npm version patch)
-                    echo "VERSION=$VERSION" >> $GITHUB_ENV
-                    echo "${{env.version}}"
+                    $TAG=$(npm version patch)
+                    echo "tag=$TAG" >> $GITHUB_ENV
+                    echo "${{env.tag}}"
+    
+    debug: 
+        name: Debug
+        runs-on: windows-2019
+        needs: checkout
+        steps: 
+            -   name: Echo variables
+                run: |
+                    echo ${{needs.checkout.outputs.tag}}
+                    echo "${{needs.checkout.outputs.tag}}"
