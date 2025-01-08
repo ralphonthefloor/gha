@@ -12,6 +12,10 @@ jobs:
                 uses: actions/setup-node@v3
                 with:
                     node-version: 20
+            -   name: Set git user
+                run: |
+                    git config --global user.email "kinnaird.matthew@gmail.com"
+                    git config --global user.name "CICD User"
             -   name: Bump
                 run: |
                     npm version patch
