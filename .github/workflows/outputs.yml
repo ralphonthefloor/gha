@@ -1,4 +1,4 @@
-name: Versioning
+name: Outputs
 on: 
     workflow_dispatch:
 jobs:
