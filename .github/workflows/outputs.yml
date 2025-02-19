@@ -6,7 +6,7 @@ jobs:
         name: Checkout
         runs-on: ubuntu-22.04
         outputs:
-            tag: ${{steps.version.outputs}}
+            tag: ${{steps.version.outputs.tag}}
         steps:
             -   name: Checkout
                 uses: actions/checkout@v4
@@ -22,9 +22,9 @@ jobs:
                 # shell: cmd
                 id: version
                 run: |
-                    TAG=$(npm version patch)
-                    echo "$TAG" >> $GITHUB_OUTPUT
-                    echo "${{env.tag}}"
+                    tag=$(npm version patch)
+                    echo "tag=$tag" >> $GITHUB_OUTPUT
+                    echo "${{steps.version.outputs.tag}}"
     
     debug: 
         name: Debug
