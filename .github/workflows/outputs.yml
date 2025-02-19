@@ -1,0 +1,37 @@
+name: Versioning
+on: 
+    workflow_dispatch:
+jobs:
+    checkout: 
+        name: Checkout
+        runs-on: ubuntu-22.04
+        outputs:
+            tag: ${{steps.version.outputs}}
+        steps:
+            -   name: Checkout
+                uses: actions/checkout@v4
+            -   name: Setup node
+                uses: actions/setup-node@v3
+                with:
+                    node-version: 20
+            -   name: Set git user
+                run: |
+                    git config --global user.email "kinnaird.matthew@gmail.com"
+                    git config --global user.name "CICD User"
+            -   name: Bump
+                # shell: cmd
+                id: version
+                run: |
+                    TAG=$(npm version patch)
+                    echo "$TAG" >> $GITHUB_OUTPUT
+                    echo "${{env.tag}}"
+    
+    debug: 
+        name: Debug
+        runs-on: ubuntu-22.04
+        needs: checkout
+        steps: 
+            -   name: Echo variables
+                run: |
+                    echo ${{needs.checkout.outputs}}
+                    echo "${{needs.checkout.outputs.tag}}"
