@@ -1,0 +1,14 @@
+name: Reusable Workflow
+on:
+    workflow_call:
+        secrets:
+            TEST_VARIABLE:
+                required: true
+jobs:
+    export-env:
+        runs-on: ubuntu-latest
+        environment: Test
+        steps:
+            - name: Get them
+              run: |
+                echo "TEST_VARIABLE=${{ vars.TEST_VARIABLE }}" >> $GITHUB_ENV
