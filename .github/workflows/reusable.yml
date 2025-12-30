@@ -2,15 +2,6 @@ name: Shared Environment Loader
 
 on:
   workflow_call:
-    # Declare EVERYTHING you expect
-    # This is your single source of truth
-    secrets:
-      DATABASE_URL:
-        required: true
-      AWS_ACCESS_KEY_ID:
-        required: true
-      AWS_SECRET_ACCESS_KEY:
-        required: true
 
 jobs:
   export-env:
