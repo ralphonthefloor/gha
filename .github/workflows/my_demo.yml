@@ -25,10 +25,8 @@ jobs:
 #     steps:
 #           - run: cd ${{ github.workspace }} && ls
   import-shared-env:
-        runs-on: ubuntu-latest
-        steps:
-          - name: Get shared env
-            uses: ./.github/workflows/reusable.yml
+        uses: ./.github/workflows/reusable.yml
+        secrets: inherit
   check-shared-env:
         needs: import-shared-env
         runs-on: ubuntu-latest
