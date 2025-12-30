@@ -1,14 +1,32 @@
-name: Reusable Workflow
+name: Shared Environment Loader
+
 on:
-    workflow_call:
-        secrets:
-            TEST_VARIABLE:
-                required: true
+  workflow_call:
+    # Declare EVERYTHING you expect
+    # This is your single source of truth
+    secrets:
+      DATABASE_URL:
+        required: true
+      AWS_ACCESS_KEY_ID:
+        required: true
+      AWS_SECRET_ACCESS_KEY:
+        required: true
+
+    inputs:
+      aws-region:
+        type: string
+        required: true
+      replicas:
+        type: string
+        required: true
+
 jobs:
-    export-env:
-        runs-on: ubuntu-latest
-        environment: Test
-        steps:
-            - name: Get them
-              run: |
-                echo "TEST_VARIABLE=${{ vars.TEST_VARIABLE }}" >> $GITHUB_ENV
+  export-env:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Export shared environment variables
+        run: |
+          echo "DATABASE_URL=SOME_DATABASE" >> $GITHUB_ENV
+          echo "AWS_ACCESS_KEY_ID=ACCESS_KEY" >> $GITHUB_ENV
+          echo "AWS_SECRET_ACCESS_KEY=SUPERSECRETSQUIRREL" >> $GITHUB_ENV
