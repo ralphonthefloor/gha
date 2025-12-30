@@ -25,16 +25,14 @@ jobs:
 #     steps:
 #           - run: cd ${{ github.workspace }} && ls
   import-shared-env:
-        uses: ./.github/workflows/reusable.yml
-        secrets: inherit
-  check-shared-env:
-        needs: import-shared-env
-        runs-on: ubuntu-latest
-        steps:
-          - name: 'Echo env'
-            run: |
-                echo $GITHUB_ENV
-                echo ${{vars.TEST_VARIABLE}}
+    uses: ./.github/workflows/reusable.yml
+    secrets: inherit
+
+  check:
+    needs: import-shared-env
+    runs-on: ubuntu-latest
+    steps:
+      - run: test -n "$TEST_SECRET" && echo "Secret exists"
   bump:
         name: 'Bump Version on master'
         runs-on: ubuntu-latest
