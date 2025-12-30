@@ -24,15 +24,19 @@ jobs:
 #     runs-on: ubuntu-latest
 #     steps:
 #           - run: cd ${{ github.workspace }} && ls
-  test-shared-workflow:
+  import-shared-env:
         runs-on: ubuntu-latest
         steps:
           - name: Get shared env
             uses: ./.github/workflows/reusable.yml
-          - name: Echo shared env
+  check-shared-env:
+        needs: import-shared-env
+        runs-on: ubuntu-latest
+        steps:
+          - name: 'Echo env'
             run: |
-              echo $GITHUB_ENV
-              echo ${{vars.TEST_VARIABLE}}
+                echo $GITHUB_ENV
+                echo ${{vars.TEST_VARIABLE}}
   bump:
         name: 'Bump Version on master'
         runs-on: ubuntu-latest
