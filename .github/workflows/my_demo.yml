@@ -24,16 +24,10 @@ jobs:
 #     runs-on: ubuntu-latest
 #     steps:
 #           - run: cd ${{ github.workspace }} && ls
+
   import-shared-env:
     uses: ./.github/workflows/reusable.yml
     secrets: inherit
-
-  check:
-    needs: import-shared-env
-    runs-on: ubuntu-latest
-    steps:
-      - run: |
-          echo "Has secret? ${{ needs.import-shared-env.outputs.has-test-secret }}"
 
   bump:
         name: 'Bump Version on master'

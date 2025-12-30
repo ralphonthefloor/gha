@@ -1,20 +1,14 @@
+name: Shared Env
+
 on:
   workflow_call:
     secrets:
       TEST_SECRET:
         required: true
-    outputs:
-      has-test-secret:
-        value: ${{ jobs.export-env.outputs.has-test-secret }}
 
 jobs:
   export-env:
     runs-on: ubuntu-latest
-    outputs:
-      has-test-secret: ${{ steps.check.outputs.exists }}
     steps:
-      - id: check
-        run: |
-          if [ -n "${{ secrets.TEST_SECRET }}" ]; then
-            echo "exists=true" >> $GITHUB_OUTPUT
-          fi
+      - run: |
+          echo "TEST_SECRET=${{ secrets.TEST_SECRET }}" >> $GITHUB_ENV
