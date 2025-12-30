@@ -2,6 +2,11 @@ name: Shared Environment Loader
 
 on:
   workflow_call:
+    # Declare EVERYTHING you expect
+    # This is your single source of truth
+    secrets:
+      TEST_SECRET:
+        required: true
 
 jobs:
   export-env:
@@ -10,6 +15,6 @@ jobs:
     steps:
       - name: Export shared environment variables
         run: |
-          echo "DATABASE_URL=SOME_DATABASE" >> $GITHUB_ENV
-          echo "AWS_ACCESS_KEY_ID=ACCESS_KEY" >> $GITHUB_ENV
-          echo "AWS_SECRET_ACCESS_KEY=SUPERSECRETSQUIRREL" >> $GITHUB_ENV
+          echo "TEST_SECRET=${{secrets.TEST_SECRET}}" >> $GITHUB_ENV
+        #   echo "AWS_ACCESS_KEY_ID=ACCESS_KEY" >> $GITHUB_ENV
+        #   echo "AWS_SECRET_ACCESS_KEY=SUPERSECRETSQUIRREL" >> $GITHUB_ENV
