@@ -11,7 +11,7 @@ on:
 jobs:
   export-env:
     runs-on: ubuntu-latest
-
+    environment: Test
     steps:
       - name: Export shared environment variables
         run: |
