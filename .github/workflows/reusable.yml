@@ -7,6 +7,5 @@ on:
 jobs:
   export-env:
     runs-on: ubuntu-latest
-    environment: Test
     steps:
       - run: echo "TEST_SECRET=${{ secrets.TEST_SECRET }}" >> $GITHUB_ENV
