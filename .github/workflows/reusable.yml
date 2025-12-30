@@ -12,14 +12,6 @@ on:
       AWS_SECRET_ACCESS_KEY:
         required: true
 
-    inputs:
-      aws-region:
-        type: string
-        required: true
-      replicas:
-        type: string
-        required: true
-
 jobs:
   export-env:
     runs-on: ubuntu-latest
