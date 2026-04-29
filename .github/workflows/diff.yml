@@ -103,7 +103,7 @@ jobs:
 
           <pre>${OASDIFF_RESULT}</pre>
           > [!NOTE]
-          > Add the `breaking-acknowledged` label to unblock.
+          > Add the \`breaking-acknowledged\` label to unblock.
           > @${{ github.event.pull_request.user.login }}
           EOF
           )
