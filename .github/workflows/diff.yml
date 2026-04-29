@@ -93,9 +93,9 @@ jobs:
       - name: Build comment body
         id: comment
         run: |
-          if [ "${{ steps.oasdiff.outputs.exit_code }}" != "0" ]; then
+          if [ "${{ steps.oasdiff_output.outputs.exit_code }}" != "0" ]; then
             OASDIFF_RESULT=$(cat <<'OASDIFF'
-          ${{ steps.oasdiff.outputs.result }}
+          ${{ steps.oasdiff_output.outputs.result }}
           OASDIFF
           )
             BODY=$(cat <<EOF
@@ -104,7 +104,7 @@ jobs:
           <pre>${OASDIFF_RESULT}</pre>
           > [!NOTE]
           > Add the `breaking-acknowledged` label to unblock.
-          > @@${{ github.event.pull_request.user.login }}
+          > @${{ github.event.pull_request.user.login }}
           EOF
           )
           else
@@ -120,7 +120,7 @@ jobs:
           echo "EOF" >> $GITHUB_OUTPUT
 
       - name: Add breaking label
-        if: steps.oasdiff.outputs.exit_code != '0'
+        if: steps.oasdiff_output.outputs.exit_code != '0'
         uses: actions/github-script@v7
         with:
           script: |
@@ -135,7 +135,7 @@ jobs:
             }
 
       - name: Remove breaking label
-        if: steps.oasdiff.outputs.exit_code == '0'
+        if: steps.oasdiff_output.outputs.exit_code == '0'
         uses: actions/github-script@v7
         with:
           script: |
@@ -163,7 +163,7 @@ jobs:
       - name: Fail if unacknowledged breaking changes
         id: breaking_change_fail
         if: |
-          steps.oasdiff.outputs.exit_code != '0' && !contains(github.event.pull_request.labels.*.name, 'breaking-acknowledged')
+          steps.oasdiff_output.outputs.exit_code != '0' && !contains(github.event.pull_request.labels.*.name, 'breaking-acknowledged')
         run: |
           echo "intentional=true" >> $GITHUB_OUTPUT
           echo "Breaking changes detected and not acknowledged."
