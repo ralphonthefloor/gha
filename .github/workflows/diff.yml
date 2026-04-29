@@ -1,4 +1,6 @@
 on: pull_request
+permissions:
+    pull-requests: write
 jobs:
     find-comment-and-update:
         runs-on: ubuntu-latest
