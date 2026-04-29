@@ -45,7 +45,7 @@ jobs:
           GENERATE_OPENAPI_SPEC: 'true'
 
       - name: Save base spec
-        run: cp base/openapi.json /tmp/openapi-target.json
+        run: cp base/openapi.json ${{ github.workspace }}/openapi-target.json
 
       # ---- PR branch ----
 
@@ -66,7 +66,7 @@ jobs:
           GENERATE_OPENAPI_SPEC: 'true'
 
       - name: Save PR spec
-        run: cp pr/openapi.json /tmp/openapi-pr.json
+        run: cp pr/openapi.json ${{ github.workspace }}/openapi-pr.json
 
       # ---- Compare ----
 
@@ -74,10 +74,10 @@ jobs:
         id: oasdiff
         uses: oasdiff/oasdiff-action/breaking@v0.0.43
         with:
-          base: /tmp/openapi-target.json
-          revision: /tmp/openapi-pr.json
+          base: ${{ github.workspace }}/openapi-target.json
+          revision: ${{ github.workspace }}/openapi-pr.json
           fail-on: ERR
-          output-to-file: /tmp/oasdiff-result.txt
+          output-to-file: ${{ github.workspace }}/oasdiff-result.txt
         continue-on-error: true
 
       - name: Read oasdiff result
