@@ -1,34 +1,111 @@
-on: pull_request
-permissions:
-    contents: read
-    pull-requests: write
-jobs:
-    find-comment-and-update:
-        runs-on: ubuntu-latest
-        name: 'Find comment and update'
-        steps:
-          - name: Checkout Target Branch
-            uses: actions/checkout@v4
-            with:
-                ref: ${{ github.base_ref }}
-          - name: Run script on target branch
-            run: npm run generate:target
-          - name: Checkout PR Branch
-            uses: actions/checkout@v4
-            with:
-                ref: ${{ github.ref }}
-          - name: Run script on PR branch
-            run: npm run generate:pr
-          - name: Output directory contents
-            run: ls
-          - name: Update PR with test results
-            uses: edumserrano/find-create-or-update-comment@v2
-            with:
-                issue-number: ${{ github.event.pull_request.number }}
-                body-includes: '<!-- breaking-change-detector-comment -->'
-                comment-author: 'github-actions[bot]'
-                body: |
-                    <!-- breaking-change-detector-comment -->
-                    My awesome comment updated
-                edit-mode: replace
+name: OpenAPI Breaking Change Detection
 
+on:
+  pull_request:
+    branches: [main, develop]
+    types: [opened, synchronize, reopened, labeled, unlabeled]
+
+jobs:
+  detect-breaking-changes:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+
+    steps:
+      - name: Install oasdiff
+        run: |
+          curl -fsSL https://raw.githubusercontent.com/tufin/oasdiff/main/install.sh | sh
+
+      # ---- Base branch ----
+
+      - name: Checkout base branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.base_ref }}
+          path: base
+
+      - name: Install dependencies (base)
+        working-directory: base
+        run: npm ci
+
+      - name: Generate OpenAPI spec (base)
+        working-directory: base
+        run: npx tsx scripts/generate-openapi.ts
+        env:
+          GENERATE_OPENAPI_SPEC: 'true'
+
+      - name: Save base spec
+        run: cp base/openapi.json /tmp/openapi-target.json
+
+      # ---- PR branch ----
+
+      - name: Checkout PR branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+          path: pr
+
+      - name: Install dependencies (PR)
+        working-directory: pr
+        run: npm ci
+
+      - name: Generate OpenAPI spec (PR)
+        working-directory: pr
+        run: npx tsx scripts/generate-openapi.ts
+        env:
+          GENERATE_OPENAPI_SPEC: 'true'
+
+      - name: Save PR spec
+        run: cp pr/openapi.json /tmp/openapi-pr.json
+
+      # ---- Compare ----
+
+      - name: Run oasdiff
+        id: oasdiff
+        run: |
+          set +e
+          RESULT=$(oasdiff breaking /tmp/openapi-target.json /tmp/openapi-pr.json --format text 2>&1)
+          EXIT_CODE=$?
+          echo "exit_code=$EXIT_CODE" >> $GITHUB_OUTPUT
+          echo "result<<EOF" >> $GITHUB_OUTPUT
+          echo "$RESULT" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Build comment body
+        id: comment
+        run: |
+          if [ "${{ steps.oasdiff.outputs.exit_code }}" != "0" ]; then
+            BODY=$(cat <<'EOF'
+          ## ❌ Breaking API Changes Detected
+            ${{ steps.oasdiff.outputs.result }}
+          EOF
+          )
+          else
+            BODY="## ✅ No Breaking API Changes
+
+          This PR introduces no breaking changes to the OpenAPI spec."
+          fi
+          echo "body<<EOF" >> $GITHUB_OUTPUT
+          echo "$BODY" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Update PR with results
+        uses: edumserrano/find-create-or-update-comment@v2
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          body-includes: '<!-- breaking-change-detector-comment -->'
+          comment-author: 'github-actions[bot]'
+          body: |
+            <!-- breaking-change-detector-comment -->
+            ${{ steps.oasdiff.outputs.exit_code != '0' && '## ❌ Breaking API Changes Detected' || '## ✅ No Breaking API Changes' }}
+
+            ${{ steps.oasdiff.outputs.exit_code != '0' && format('```\n{0}\n```', steps.oasdiff.outputs.result) || 'This PR introduces no breaking changes to the OpenAPI spec.' }}
+          edit-mode: replace
+     
+      - name: Fail if unacknowledged breaking changes
+        if: |
+          steps.oasdiff.outputs.exit_code != '0' && !contains(github.event.pull_request.labels.*.name, 'breaking-change-acknowledged')
+        run: |
+          echo "Breaking changes detected and not acknowledged."
+          exit 1
