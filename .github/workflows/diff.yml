@@ -13,6 +13,18 @@ jobs:
       pull-requests: write
 
     steps:
+      - name: Post processing comment
+        uses: edumserrano/find-create-or-update-comment@v2
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          body-includes: '<!-- breaking-change-detector-comment -->'
+          comment-author: 'github-actions[bot]'
+          body: |
+            <!-- breaking-change-detector-comment -->
+            ## 🔄 Checking for Breaking API Changes...
+            This comment will be updated when the check completes.
+          edit-mode: replace
+          
       - name: Install oasdiff
         run: |
           curl -fsSL https://raw.githubusercontent.com/tufin/oasdiff/main/install.sh | sh
@@ -103,6 +115,29 @@ jobs:
             ${{ steps.oasdiff.outputs.exit_code != '0' && format('```\n{0}\n```', steps.oasdiff.outputs.result) || 'This PR introduces no breaking changes to the OpenAPI spec.' }}
           edit-mode: replace
      
+      - name: Fail if unacknowledged breaking changes
+        if: |
+          steps.oasdiff.outputs.exit_code != '0' && !contains(github.event.pull_request.labels.*.name, 'breaking-change-acknowledged')
+        run: |
+          echo "Breaking changes detected and not acknowledged."
+          exit 1
+
+      - name: Update PR with failure notice
+        if: failure()
+        uses: edumserrano/find-create-or-update-comment@v2
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          body-includes: '<!-- breaking-change-detector-comment -->'
+          comment-author: 'github-actions[bot]'
+          body: |
+            <!-- breaking-change-detector-comment -->
+            ## ⚠️ Breaking Change Detection Failed
+
+            The workflow encountered an error and could not complete the analysis. This could be due to a build failure, a missing dependency, or an issue with the OpenAPI generation script.
+
+            Please check the [workflow run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) for details.
+          edit-mode: replace
+
       - name: Fail if unacknowledged breaking changes
         if: |
           steps.oasdiff.outputs.exit_code != '0' && !contains(github.event.pull_request.labels.*.name, 'breaking-change-acknowledged')
