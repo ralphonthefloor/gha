@@ -1,6 +1,6 @@
 {
   "name": "gha",
-  "version": "1.0.59",
+  "version": "1.0.60",
   "main": "index.js",
   "scripts": {
     "generate:target": "node target.js",
