@@ -106,9 +106,8 @@ jobs:
           ## ❌ Breaking API Changes Detected
 
           <pre>${OASDIFF_RESULT}</pre>
-          > [!NOTE]
-          > Add the \`breaking-acknowledged\` label to unblock.
-          > @${{ github.event.pull_request.user.login }}
+          
+          @${{ github.event.pull_request.user.login }}, add the \`breaking-acknowledged\` label to unblock.
           EOF
           )
           else
