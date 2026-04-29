@@ -80,6 +80,19 @@ jobs:
           output-to-file: ${{ github.workspace }}/oasdiff-result.txt
         continue-on-error: true
 
+      - name: Diagnose oasdiff output location
+        run: |
+          echo "--- workspace ---"
+          ls ${{ github.workspace }}/
+          echo "--- /tmp ---"
+          ls /tmp/
+          echo "--- github.workspace value ---"
+          echo ${{ github.workspace }}
+          echo "--- find any oasdiff-result files ---"
+          find / -name "oasdiff-result*" 2>/dev/null || echo "none found"
+          echo "--- find any openapi json files ---"
+          find / -name "*.json" 2>/dev/null | grep -i openapi || echo "none found"
+
       - name: Read oasdiff result
         id: oasdiff_output
         run: |
