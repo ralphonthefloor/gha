@@ -16,7 +16,6 @@ jobs:
       - name: Install oasdiff
         run: |
           curl -fsSL https://raw.githubusercontent.com/tufin/oasdiff/main/install.sh | sh
-          sudo mv oasdiff /usr/local/bin/oasdiff
 
       # ---- Base branch ----
 
