@@ -88,15 +88,9 @@ jobs:
         id: comment
         run: |
           if [ "${{ steps.oasdiff.outputs.exit_code }}" != "0" ]; then
-            BODY=$(cat <<'EOF'
-          ## ❌ Breaking API Changes Detected
-            ${{ steps.oasdiff.outputs.result }}
-          EOF
-          )
+            BODY=$(printf '## ❌ Breaking API Changes Detected\n\n<pre>%s</pre>' '${{ steps.oasdiff.outputs.result }}')
           else
-            BODY="## ✅ No Breaking API Changes
-
-          This PR introduces no breaking changes to the OpenAPI spec."
+            BODY=$(printf '## ✅ No Breaking API Changes\n\nThis PR introduces no breaking changes to the OpenAPI spec.')
           fi
           echo "body<<EOF" >> $GITHUB_OUTPUT
           echo "$BODY" >> $GITHUB_OUTPUT
@@ -110,9 +104,7 @@ jobs:
           comment-author: 'github-actions[bot]'
           body: |
             <!-- breaking-change-detector-comment -->
-            ${{ steps.oasdiff.outputs.exit_code != '0' && '## ❌ Breaking API Changes Detected' || '## ✅ No Breaking API Changes' }}
-
-            ${{ steps.oasdiff.outputs.exit_code != '0' && format('```\n{0}\n```', steps.oasdiff.outputs.result) || 'This PR introduces no breaking changes to the OpenAPI spec.' }}
+            ${{ steps.comment.outputs.body }}
           edit-mode: replace
      
       - name: Fail if unacknowledged breaking changes
