@@ -88,9 +88,23 @@ jobs:
         id: comment
         run: |
           if [ "${{ steps.oasdiff.outputs.exit_code }}" != "0" ]; then
-            BODY=$(printf '## ❌ Breaking API Changes Detected\n\n<pre>%s</pre>' '${{ steps.oasdiff.outputs.result }}')
+            OASDIFF_RESULT=$(cat <<'OASDIFF'
+          ${{ steps.oasdiff.outputs.result }}
+          OASDIFF
+          )
+            BODY=$(cat <<EOF
+          ## ❌ Breaking API Changes Detected
+
+          <pre>${OASDIFF_RESULT}</pre>
+          EOF
+          )
           else
-            BODY=$(printf '## ✅ No Breaking API Changes\n\nThis PR introduces no breaking changes to the OpenAPI spec.')
+            BODY=$(cat <<'EOF'
+          ## ✅ No Breaking API Changes
+
+          This PR introduces no breaking changes to the OpenAPI spec.
+          EOF
+          )
           fi
           echo "body<<EOF" >> $GITHUB_OUTPUT
           echo "$BODY" >> $GITHUB_OUTPUT
