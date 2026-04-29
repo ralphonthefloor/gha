@@ -111,33 +111,33 @@ jobs:
           echo "$BODY" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
 
-      - name: Add breaking-change label
+      - name: Add breaking label
         if: steps.oasdiff.outputs.exit_code != '0'
         uses: actions/github-script@v7
         with:
           script: |
             const labels = context.payload.pull_request.labels.map(l => l.name);
-            if (!labels.includes('breaking-change')) {
+            if (!labels.includes('breaking')) {
               await github.rest.issues.addLabels({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 issue_number: context.issue.number,
-                labels: ['breaking-change']
+                labels: ['breaking']
               });
             }
 
-      - name: Remove breaking-change label
+      - name: Remove breaking label
         if: steps.oasdiff.outputs.exit_code == '0'
         uses: actions/github-script@v7
         with:
           script: |
             const labels = context.payload.pull_request.labels.map(l => l.name);
-            if (labels.includes('breaking-change')) {
+            if (labels.includes('breaking')) {
               await github.rest.issues.removeLabel({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 issue_number: context.issue.number,
-                name: 'breaking-change'
+                name: 'breaking'
               });
             }
 
@@ -155,7 +155,7 @@ jobs:
       - name: Fail if unacknowledged breaking changes
         id: breaking_change_fail
         if: |
-          steps.oasdiff.outputs.exit_code != '0' && !contains(github.event.pull_request.labels.*.name, 'breaking-change-acknowledged')
+          steps.oasdiff.outputs.exit_code != '0' && !contains(github.event.pull_request.labels.*.name, 'breaking-acknowledged')
         run: |
           echo "intentional=true" >> $GITHUB_OUTPUT
           echo "Breaking changes detected and not acknowledged."
