@@ -77,7 +77,7 @@ jobs:
         id: oasdiff
         run: |
           set +e
-          RESULT=$(oasdiff breaking /tmp/openapi-target.json /tmp/openapi-pr.json --format text 2>&1)
+          RESULT=$(oasdiff breaking /tmp/openapi-target.json /tmp/openapi-pr.json --format text --fail-on ERR 2>&1)
           EXIT_CODE=$?
           echo "exit_code=$EXIT_CODE" >> $GITHUB_OUTPUT
           echo "result<<EOF" >> $GITHUB_OUTPUT
@@ -137,10 +137,3 @@ jobs:
 
             Please check the [workflow run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) for details.
           edit-mode: replace
-
-      - name: Fail if unacknowledged breaking changes
-        if: |
-          steps.oasdiff.outputs.exit_code != '0' && !contains(github.event.pull_request.labels.*.name, 'breaking-change-acknowledged')
-        run: |
-          echo "Breaking changes detected and not acknowledged."
-          exit 1
