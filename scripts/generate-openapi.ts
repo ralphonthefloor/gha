@@ -32,4 +32,4 @@ writeFileSync('openapi.json', JSON.stringify({
   }
 }
 ))
-console.log('generated')
+console.log('updated')
