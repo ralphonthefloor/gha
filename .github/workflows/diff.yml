@@ -116,14 +116,17 @@ jobs:
           edit-mode: replace
      
       - name: Fail if unacknowledged breaking changes
+        id: breaking_change_fail
         if: |
           steps.oasdiff.outputs.exit_code != '0' && !contains(github.event.pull_request.labels.*.name, 'breaking-change-acknowledged')
         run: |
+          echo "intentional=true" >> $GITHUB_OUTPUT
           echo "Breaking changes detected and not acknowledged."
           exit 1
 
       - name: Update PR with failure notice
-        if: failure()
+        if: |
+          failure() && steps.breaking_change_fail.outputs.intentional != 'true'
         uses: edumserrano/find-create-or-update-comment@v2
         with:
           issue-number: ${{ github.event.pull_request.number }}

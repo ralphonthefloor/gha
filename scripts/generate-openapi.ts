@@ -19,10 +19,10 @@ writeFileSync('openapi.json', JSON.stringify({
                 "schema": {
                   "type": "array",
                   "items": {
-                    "type": "number"
+                    "type": "string"
                   }
                 },
-                "example": [1, 2, 3]
+                "example": ["Alice", "Bob", "Charlie"]
               }
             }
           }
